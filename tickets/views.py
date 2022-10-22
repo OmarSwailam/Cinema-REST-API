@@ -5,10 +5,11 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import filters, status
 from rest_framework.views import APIView
+from rest_framework import viewsets
 from .models import *
 from .serializers import *
 
-
+# function based views
 @api_view(['GET', 'POST'])
 def fbv_list(request):
     if request.method == 'GET':
@@ -44,7 +45,7 @@ def fbv_pk(request, pk):
         guest.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-
+# class based views
 class CbvList(APIView):
 
     def get(self, request):
@@ -86,3 +87,44 @@ class CbvPk(APIView):
         guest = Guest.objects.get(pk=pk)
         guest.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+# viewsets
+class viewsets_guest(viewsets.ModelViewSet):
+    queryset = Guest.objects.all()
+    serializer_class = GuestSerializer
+
+class viewsets_movie(viewsets.ModelViewSet):
+    queryset = Movie.objects.all()
+    serializer_class = MovieSerializer
+    filter_backend = [filters.SearchFilter]
+    search_fields = ['movie']
+
+class viewsets_reservation(viewsets.ModelViewSet):
+
+
+    queryset = Reservation.objects.all()
+    serializer_class = Reservation
+
+# function based views for the project logic
+@api_view(['GET'])
+def find_movie(request):
+    movies = Movie.objects.filter(
+        movie = request.data['movie'],
+    )
+    serializer = MovieSerializer(movies, many= True)
+    return Response(serializer.data)
+
+@api_view(['POST'])
+def new_reservation(request):
+
+    movie = Movie.objects.get(
+        hall = request.data['hall'],
+        movie = request.data['movie'],
+    )
+    guest = Guest(guest=request.data['name'], mobile=request.data['mobile'])
+    guest.save()
+
+    reservation = Reservation(guest=guest, movie=movie)
+    reservation.save()
+
+    return Response(status=status.HTTP_201_CREATED)
