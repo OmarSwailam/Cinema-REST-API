@@ -2,13 +2,13 @@ from django.db import models
 
 
 class Movie(models.Model):
-    movie_name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100)
     hall = models.CharField(max_length=10)
     date = models.DateField()
 
 
 class Guest(models.Model):
-    guest_name = models.CharField(max_length=32)
+    name = models.CharField(max_length=32)
     mobile = models.CharField(max_length=15)
 
 
