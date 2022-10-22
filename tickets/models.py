@@ -1,3 +1,18 @@
 from django.db import models
 
-# Create your models here.
+
+class Movie(models.Model):
+    movie_name = models.CharField(max_length=100)
+    hall = models.CharField(max_length=10)
+    date = models.DateField()
+
+
+class Guest(models.Model):
+    guest_name = models.CharField(max_length=32)
+    mobile = models.CharField(max_length=15)
+
+
+class Reservation(models.Model):
+    guest = models.ForeignKey(Guest, on_delete=models.CASCADE, related_name="reservations")
+    movie = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name="reservations")
+    
