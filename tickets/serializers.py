@@ -1,20 +1,19 @@
-from dataclasses import fields
 from rest_framework import serializers
 from .models import *
 
-class MovieSerializer(serializers.Serializer):
+class MovieSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie
         fields = '__all__'
 
 
-class ReservationSerializer(serializers.Serializer):
+class ReservationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reservation
         fields = '__all__'
 
 
-class GuestSerializer(serializers.Serializer):
+class GuestSerializer(serializers.ModelSerializer):
     class Meta:
         model = Guest
         fields = ['id', 'name', 'mobile', 'reservations']
