@@ -13,5 +13,7 @@ urlpatterns = [
     path("fbv_pk/<int:pk>", views.fbv_pk, name="fbv_pk"),
     path("cbv_list", views.CbvList.as_view(), name="cbv_list"),
     path("cbv_pk/<int:pk>", views.CbvPk.as_view(), name="cbv_pk"),
-    path("viewsets>", include(router.urls)),
+    path("viewsets", include(router.urls)),
+    path("find_movie", views.find_movie, name='find_movie'),
+    path("new_reservation", views.new_reservation, name='new_reservation'),
 ]

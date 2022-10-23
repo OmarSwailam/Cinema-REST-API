@@ -1,5 +1,3 @@
-from urllib import response
-from django.shortcuts import render
 from django.http import Http404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -101,14 +99,15 @@ class viewsets_movie(viewsets.ModelViewSet):
 
 class viewsets_reservation(viewsets.ModelViewSet):
 
-
     queryset = Reservation.objects.all()
     serializer_class = Reservation
 
 # function based views for the project logic
 @api_view(['GET'])
 def find_movie(request):
-    movies = Movie.objects.filter(
+    print("--------------------------")
+    print(request.data)
+    movies = Movie.objects.filter(    
         movie = request.data['movie'],
     )
     serializer = MovieSerializer(movies, many= True)
@@ -121,10 +120,17 @@ def new_reservation(request):
         hall = request.data['hall'],
         movie = request.data['movie'],
     )
-    guest = Guest(guest=request.data['name'], mobile=request.data['mobile'])
-    guest.save()
+    
+    try:
+        guest = Guest.objects.get(name=request.data['name'], mobile=request.data['mobile'])
+    except Guest.DoesNotExist:      
+        guest = Guest(name=request.data['name'], mobile=request.data['mobile'])
+        guest.save()
 
-    reservation = Reservation(guest=guest, movie=movie)
-    reservation.save()
-
-    return Response(status=status.HTTP_201_CREATED)
+    try:
+        reservation = Reservation.objects.get(guest=guest, movie=movie)
+    except Reservation.DoesNotExist:
+        reservation = Reservation(guest=guest, movie=movie)
+        reservation.save()
+        return Response(status=status.HTTP_201_CREATED)       
+    return Response(status=status.HTTP_208_ALREADY_REPORTED)

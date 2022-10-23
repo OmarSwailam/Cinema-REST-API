@@ -2,7 +2,7 @@ from django.db import models
 
 
 class Movie(models.Model):
-    name = models.CharField(max_length=100)
+    movie = models.CharField(max_length=100)
     hall = models.CharField(max_length=10)
     date = models.DateField()
 
