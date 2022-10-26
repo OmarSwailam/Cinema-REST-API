@@ -1,11 +1,22 @@
 from django.http import Http404
+from django.http.response import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import filters, status
 from rest_framework.views import APIView
-from rest_framework import viewsets
+from rest_framework import generics, viewsets
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 from .models import *
 from .serializers import *
+
+
+def no_rest(request):
+    if request.method == 'GET':
+        guests = Guest.objects.all()
+        serializer = GuestSerializer(guests, many=True)
+        return JsonResponse(serializer.data, safe=False)
+   
 
 # function based views
 @api_view(['GET', 'POST'])
@@ -45,7 +56,7 @@ def fbv_pk(request, pk):
 
 # class based views
 class CbvList(APIView):
-
+    
     def get(self, request):
         guests = Guest.objects.all()
         serializer = GuestSerializer(guests, many=True)
@@ -85,6 +96,21 @@ class CbvPk(APIView):
         guest = Guest.objects.get(pk=pk)
         guest.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+# Generics
+class generics_list(generics.ListCreateAPIView):
+    queryset = Guest.objects.all()
+    serializer_class = GuestSerializer
+    authentication_classes = [TokenAuthentication]
+
+
+class generics_pk(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Guest.objects.all()
+    serializer_class = GuestSerializer
+    authentication_classes = [TokenAuthentication]
+
+
 
 # viewsets
 class viewsets_guest(viewsets.ModelViewSet):
